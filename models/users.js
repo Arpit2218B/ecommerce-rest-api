@@ -1,4 +1,5 @@
 const { Schema, model } = require('mongoose');
+const bcrypt = require('bcrypt');
 const contactInformationSchema = require('./userContact');
 const billingInformationSchema = require('./userBillingInformation');
 
@@ -34,6 +35,22 @@ const UserSchema = new Schema({
             default: true
         }
     }
+});
+
+UserSchema.pre('save', function (next) {
+    let user = this;
+    console.log('Hello');
+    const SALT_WORK_FACTOR = 10;
+    if (!user.isModified('password'))
+        return next();
+    bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
+        bcrypt.hash(user.password, salt, function (err, hash) {
+            if (err)
+                return next(err);
+            user.password = hash;
+            next();
+        });
+    });
 });
 
 module.exports = model('user', UserSchema);
