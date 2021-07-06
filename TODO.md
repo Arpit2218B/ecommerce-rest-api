@@ -2,7 +2,7 @@
 - [X] Users Update Payment Option
 - [X] Users Delete
 - [X] Add hashing of passwords
-- [] Auth (login) + token generation
-- [] Auth (try google login)
-- [] Products
-- [] Orders
+- [ ] Auth (login) + token generation
+- [ ] Auth (try google login)
+- [ ] Products
+- [ ] Orders
