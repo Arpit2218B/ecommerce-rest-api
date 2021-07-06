@@ -1,0 +1,8 @@
+- [X] Users updateContactInfo
+- [X] Users Update Payment Option
+- [X] Users Delete
+- [] Add hashing of passwords
+- [] Auth (login) + token generation
+- [] Auth (try google login)
+- [] Products
+- [] Orders
