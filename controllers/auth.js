@@ -1,22 +1,40 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const User = require('../models/users');
 
 const auth = {
-    login: (req, res, next) => {
+    login: async (req, res, next) => {
         try {
-            // const { userName, password } = req.body;
+            const { userName, password } = req.body;
             // 1. check if user is present
-            // 2. match password hash in request to password from db
-            // 3. generate jsonwebtoken
-            let payload = {
-                username: 'galjonit2218'
+            const isUserPresent = await User.findOne({userName: userName});
+            console.log(isUserPresent);
+            if(!isUserPresent) {
+                const err = new Error('Invalid credentials');
+                err.statusCode = 403;
+                return next(err);
             }
-            let token = jwt.sign(payload, 'some_secret');
-            // 4. send back the response
-            res
-            .status(200)
-            .json({
-                message: 'Log in successful',
-                jwt: token
+            // 2. match password hash in request to password from db
+            bcrypt.compare(password, isUserPresent.password, function (err, response) {
+                if (err || !response) {
+                    const err = new Error('Invalid credentials');
+                    err.statusCode = 403;
+                    return next(err);
+                }
+                // 3. generate jsonwebtoken
+                let payload = {
+                    username: userName
+                }
+                let token = jwt.sign(payload, 'some_secret', {
+                    expiresIn: 20
+                });
+                // 4. send back the response
+                res
+                .status(200)
+                .json({
+                    message: 'Login successful',
+                    jwt: token
+                });
             });
         }
         catch(err) {
@@ -33,11 +51,10 @@ const auth = {
             throw err;
         }
         jwt.verify(token, 'some_secret', (err, user) => {
-            // add a check for expired tokens
             if(err) {
-                const err = new Error('Invalid user');
-                err.statusCode = 403;
-                throw err;
+                const error = new Error(err);
+                error.statusCode = 403;
+                throw error;
             }
             req.loggedInUser = user;
             next();
