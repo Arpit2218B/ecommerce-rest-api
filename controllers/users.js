@@ -27,42 +27,27 @@ const users = {
             });
     },
 
-    createUser: (req, res, next) => {
+    createUser: async (req, res, next) => {
         const body = req.body;
         const user = new User(body);
-        // const user = new User({
-        //     userName: 'gal',
-        //     name: 'Arpit Rathi',
-        //     password: 'hashedPassword',
-        //     contactInformation: {
-        //         phone: 9881040011,
-        //         email: 'arpit@gmail.com'
-        //     },
-        //     billingInformation: {
-        //         adresses: [
-        //             'Street 1',
-        //             'Street 2'
-        //         ],
-        //         paymentOptions: [{
-        //             cardName: 'Arpit Rathi',
-        //             cardNumber: 4242424242424242,
-        //             expiryDate: '02/26'
-        //         }]
-        //     }
-        // });
-        user
-            .save()
-            .then(data => {
-                res
-                    .status(201)
-                    .json({
-                        message: 'User created successfully',
-                        _id: data._id
-                    });
-            })
-            .catch(err => {
-                next(err);
+        try {
+            const existingUser = await User.find({userName: req.body.userName});
+            if(existingUser.length > 0) {
+                const err = new Error('Username already exists');
+                err.statusCode = 400;
+                return next(err);
+            }
+            const response = await user.save();
+            res
+            .status(201)
+            .json({
+                message: 'User created successfully',
+                _id: response.id
             });
+        }
+        catch(err) {
+            next(err);
+        }
     },
 
     updateContactInfo: async (req, res, next) => {

@@ -39,7 +39,6 @@ const UserSchema = new Schema({
 
 UserSchema.pre('save', function (next) {
     let user = this;
-    console.log('Hello');
     const SALT_WORK_FACTOR = 10;
     if (!user.isModified('password'))
         return next();

@@ -7,6 +7,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const userRouter = require('./routes/users');
+const productRouter = require('./routes/products');
+const authRouter = require('./routes/auth');
+
+const authMiddleware = require('./controllers/auth').verifyToken;
 
 // middlewares
 const app = express();
@@ -15,6 +19,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // routes
 app.use('/users', userRouter);
+app.use('/products', authMiddleware, productRouter);
+app.use('/auth', authRouter);
 
 // 404 middleware
 app.use((req, res) => {
