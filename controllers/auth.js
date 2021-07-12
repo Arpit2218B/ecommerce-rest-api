@@ -7,8 +7,7 @@ const auth = {
         try {
             const { userName, password } = req.body;
             // 1. check if user is present
-            const isUserPresent = await User.findOne({userName: userName});
-            console.log(isUserPresent);
+            const isUserPresent = await User.findOne({userName: userName, "metaInfo.isActivated": true});
             if(!isUserPresent) {
                 const err = new Error('Invalid credentials');
                 err.statusCode = 403;
